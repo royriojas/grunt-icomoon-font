@@ -1,6 +1,6 @@
 {
   "name": "ico-mixins",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A cli tool to generate a mixin for each icon defined in the selection.json file from icomoon",
   "main": "index.js",
   "scripts": {
