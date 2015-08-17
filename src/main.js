@@ -2,22 +2,32 @@ var ES6Promise = require( 'es6-promise' ).Promise;
 
 module.exports = {
   dirname: __dirname,
-  processTarget: function ( data, options, name, cli ) {
+  processTargets: function ( dataEntry, cli ) {
+    var me = this;
+
+    var _files = dataEntry.files || [ ];
+    cli.log( dataEntry.name, 'start!' );
+
+    var options = dataEntry.options; //extend( true, dataEntry.options, me._getOverrideOptions( cli.opts ) );
+
+    return _files.reduce( function ( seq, data ) {
+      return seq.then( function () {
+        var _data = { src: data.src[ 0 ], dest: data.dest };
+        return me.processTarget( _data, options, cli ).then( function () {
+          cli.log( dataEntry.name, 'done!' );
+        } );
+      } );
+    }, ES6Promise.resolve() );
+  },
+  processTarget: function ( data, options, cli ) {
 
     var fCreator = require( '../' ).create();
-    // fCreator.on( 'files:to:process', function ( e, files ) {
-    //   cli.log( files );
-    // } );
 
     fCreator.on( 'file:created', function ( e, args ) {
       cli.subtle( 'created:', args.dest );
     } );
 
-    return fCreator.process( data, options ).then( function () {
-      if ( name ) {
-        cli.success( 'task "' + name + '" completed!' );
-      }
-    } );
+    return fCreator.process( data, options );
   },
   run: function ( cli ) {
     var path = require( 'path' );
@@ -49,7 +59,7 @@ module.exports = {
         extend( true, commonOpts, config );
       }
 
-      taskTargets = cli.getTargets( commonOpts );
+      taskTargets = cli.getTargets( commonOpts, cliOpts.target );
 
     } else {
       if ( cliOpts._.length === 0 ) {
@@ -63,25 +73,29 @@ module.exports = {
 
       taskTargets = [
         {
-          name: '',
-          data: {
-            src: cliOpts._[ 0 ],
-            dest: cliOpts.output
-          },
+          name: 'default',
+          files: [
+            {
+              src: cliOpts._[ 0 ],
+              dest: cliOpts.output
+            }
+          ],
           options: commonOpts.options
         }
       ];
     }
 
     var p = taskTargets.reduce( function ( seq, target ) {
-      return seq.then( me.processTarget.bind( me, target.data, target.options, target.name, cli ) );
+      return seq.then( me.processTargets.bind( me, target, cli ) );
     }, ES6Promise.resolve() );
 
     p.then( function () {
-      cli.ok( 'Done!' );
+      cli.ok( 'ico-mixins done!' );
     } );
     p.catch( function ( ex ) {
-      cli.error( ex );
+      setTimeout( function () {
+        throw ex;
+      }, 0 );
     } );
   }
 };

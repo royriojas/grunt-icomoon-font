@@ -19,6 +19,13 @@ module.exports = {
         alias: 'o',
         type: 'String',
         description: 'The path to the output less file. A mixins file will also be created in the same directory'
+      },
+      {
+        option: 'target',
+        alias: 't',
+        type: 'String',
+        dependsOn: 'config',
+        description: 'The name of the target to execute from all the posible targets'
       }
     ]
   }
