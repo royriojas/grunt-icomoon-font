@@ -76,7 +76,7 @@ module.exports = {
           name: 'default',
           files: [
             {
-              src: cliOpts._[ 0 ],
+              src: cliOpts._,
               dest: cliOpts.output
             }
           ],
