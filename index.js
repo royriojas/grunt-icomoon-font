@@ -37,15 +37,19 @@ var fontCreator = extend( dispatchy.create(), {
         var fontData = {
           name: rawData.metadata.name,
           prefix: prefix,
-          icons: rawData.icons.map( function ( icon ) {
-            var name = icon.properties.name;
-            var iconName = opts.processIconName( name );
-            return {
-              name: iconName,
-              hexCode: '\\' + (icon.properties.code).toString( 16 ),
-              className: prefix + iconName
-            };
-          } )
+          icons: rawData.icons.reduce( function ( seq, icon ) {
+            var names = icon.properties.name.split( ',' );
+            names.forEach( function ( name ) {
+              name = name.trim();
+              var iconName = opts.processIconName( name );
+              seq.push( {
+                name: iconName,
+                hexCode: '\\' + (icon.properties.code).toString( 16 ),
+                className: prefix + iconName
+              } );
+            } );
+            return seq;
+          }, [ ] )
         };
 
         var relativePath = path.resolve( path.join( path.dirname( jsonFontDescriptor ), opts.fontsFolder ) );
@@ -69,7 +73,9 @@ var fontCreator = extend( dispatchy.create(), {
         var renderFontDef = dot.template( read( path.resolve( opts.fontDefTemplate ) ), templateSettings );
 
         var fData = {
-          fontData: fontData, mixinsFile: mixinsFile, fontDefFile: fontDefFile
+          fontData: fontData,
+          mixinsFile: mixinsFile,
+          fontDefFile: fontDefFile
         };
 
         var mixinText = renderCodeFonts( fData );
@@ -78,17 +84,11 @@ var fontCreator = extend( dispatchy.create(), {
 
         write( mixinsDest, mixinText );
 
-        me.fire( 'file:created', {
-          type: 'mixin less file',
-          dest: mixinsDest
-        } );
+        me.fire( 'file:created', { type: 'mixin less file', dest: mixinsDest } );
 
         write( fontDefDest, fontText );
 
-        me.fire( 'file:created', {
-          type: 'def less file',
-          dest: fontDefDest
-        } );
+        me.fire( 'file:created', { type: 'def less file', dest: fontDefDest } );
 
         write( dest, lessText );
 
@@ -99,10 +99,7 @@ var fontCreator = extend( dispatchy.create(), {
         if ( jsonCodesOutput ) {
           jsonCodesOutput = path.resolve( jsonCodesOutput );
           write( jsonCodesOutput, sFormat( 'var fontData = {0}', JSON.stringify( fontData, null, 2 ) ) );
-          me.fire( 'file:created', {
-            type: 'JSON Metadata',
-            dest: jsonCodesOutput
-          } );
+          me.fire( 'file:created', { type: 'JSON Metadata', dest: jsonCodesOutput } );
         }
 
         var p = filesToProcess.reduce( function ( seq, entry ) {
@@ -112,10 +109,7 @@ var fontCreator = extend( dispatchy.create(), {
             var outputDir = path.join( destDir, opts.fontsFolder );
 
             return pCopy( entry, outputDir ).then( function () {
-              me.fire( 'file:created', {
-                type: 'font file',
-                dest: path.join( outputDir, baseName )
-              } );
+              me.fire( 'file:created', { type: 'font file', dest: path.join( outputDir, baseName ) } );
             } );
           } );
         //grunt.log.ok( 'File created: ' + outputFileName );
