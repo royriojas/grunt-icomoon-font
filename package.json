@@ -59,7 +59,7 @@
     "read-json-sync": "^1.1.0",
     "stringformat": "0.0.5",
     "thenify": "^3.1.0",
-    "write": "^0.2.1"
+    "write": "^2.0.0"
   },
   "changelogx": {
     "ignoreRegExp": [
