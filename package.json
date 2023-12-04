@@ -49,8 +49,8 @@
     "watch-spawn": "^1.0.4"
   },
   "dependencies": {
-    "clix": "^2.0.15",
-    "copy": "^0.1.1",
+    "clix": "^5.0.0",
+    "copy": "^0.2.0",
     "dispatchy": "^1.0.3",
     "dot": "^1.0.3",
     "es6-promise": "^2.3.0",
