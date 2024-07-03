@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "clix": "^2.0.15",
-    "copy": "^0.1.1",
+    "copy": "^0.2.1",
     "dispatchy": "^1.0.3",
     "dot": "^1.0.3",
     "es6-promise": "^2.3.0",
